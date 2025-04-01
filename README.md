@@ -44,20 +44,14 @@ The BBB_Martins dataset is vital for neuropharmaceutical research:
 ## 📂 Project Structure
 ```
 bbb-prediction/
-├── data/
-│   ├── BBB_Martins/       
-│   │   ├── BBB_Martins.csv  # Complete dataset
-│   │   ├── train.csv        # Training split
-│   │   ├── test.csv         # Testing split
-│   │   ├── valid.csv        # Validation split
-│   ├── featurized_data/     # Processed molecular features
-│   ├── results/             # Model evaluation metrics
+├── data/                    # Stores all data
+│   ├── download_data/       # Stores downloaded data from tdc       
+│   ├── featurized_data/     # Processed molecular features data for each split
+│   ├── results/             # Model evaluation results
 │   └── plots/               # Performance visualizations
 ├── models/                  # Saved model files
 │   ├── xgboost/             # XGBoost models
-│   ├── lightgbm/            # LightGBM models (if implemented)
-│   └── logistic/            # Logistic regression models (if implemented)
-├── notebooks/
+├── notebooks/               # Stores notebooks
 │   ├── analysis.ipynb       # Main notebook for visualization and analysis
 │   ├── exploration.ipynb    # Initial data exploration
 │   └── evaluation.ipynb     # Detailed model evaluation
@@ -65,7 +59,6 @@ bbb-prediction/
 │   ├── download_data.py     # Dataset acquisition script
 │   ├── featurize_data.py    # Molecular featurization script
 │   ├── modelling.py         # Model training and evaluation
-│   └── utils.py             # Helper functions
 ├── environment.yml          # Conda environment specification
 ├── .gitignore
 ├── LICENSE
@@ -85,18 +78,19 @@ bbb-prediction/
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/your-username/bbb-prediction.git
+git clone https://github.com/jaycobson/bbb-prediction.git
 cd bbb-prediction
 ```
 
 2. **Set up the conda environment**
 ```bash
 # Create and activate the environment using the yml file
-conda env create --file environment.yml
-conda activate bbbp
+conda env create --file env.yml
+conda activate bbb
 ```
 
 The `environment.yml` file includes all necessary dependencies:
+- ersilia (for molecular featurization)
 - rdkit
 - scikit-learn
 - xgboost
@@ -106,32 +100,25 @@ The `environment.yml` file includes all necessary dependencies:
 - matplotlib
 - seaborn
 - jupyter
-- ersilia (for molecular featurization)
 
 3. **Dataset Acquisition**
 ```bash
-# The dataset is already included in the data folder
-# To manually download it, run:
-python scripts/download_data.py
+# To download it, run:
+python scripts/download_data.py --dataset BBB_Martins
 ```
+You need to specify the dataset you want to download, the default on the CLI is BBB_Martins. If you need to download another kind of data, kindly specify the dataset name.
 
 This script:
 - Downloads the BBB_Martins dataset from TDC
-- Creates train/validation/test splits if needed
-- Saves data to `data/BBB_Martins/`
-
-4. **Verify Installation**
-```bash
-# Check that everything is working
-python -c "import rdkit; import ersilia; import xgboost; print('Setup successful!')"
-```
+- Creates train/validation/test splits 
+- Saves data to `data/download_data/`
 
 ## 🧪 Data Exploration and Visualization
 
 To explore the dataset and understand the molecular properties:
 
 ```bash
-jupyter notebook notebooks/analysis.ipynb
+Navigate notebooks -> analysis.ipynb 
 ```
 
 The notebook includes:
@@ -140,11 +127,11 @@ The notebook includes:
 - Checking for duplicates and data integrity
 - Class distribution analysis
 - Chemical property visualization (molecular weight, LogP, etc.)
-- Structural similarity assessment
 
 ## 🚀 Molecular Featurization
+This project leverages the Uni-Mol molecular representation model from the [Ersilia Model Hub](https://www.ersilia.io/model-hub) for advanced molecular featurization. The model is also available in this [github repository](https://github.com/ersilia-os/eos39co).
 
-This project uses the **RDKit Descriptor Model** from Ersilia Model Hub for comprehensive molecular featurization.
+Uni-Mol employs an SE(3) equivariant transformer architecture, designed to capture intricate 3D molecular structures. Trained on over 200 million conformations, it generates high-quality molecular embeddings, enhancing predictive performance in cheminformatics and drug discovery applications. Its model id is eos39co in the Ersilia Model Hub
 
 ### Setup Ersilia Model
 ```bash
@@ -152,26 +139,25 @@ This project uses the **RDKit Descriptor Model** from Ersilia Model Hub for comp
 pip install ersilia
 
 # Fetch and serve the model
-ersilia fetch eos8a4x
-ersilia serve eos8a4x
+ersilia fetch eos39co
+ersilia serve eos39co
 ```
 
 ### Generate Features
 ```bash
-# Process SMILES strings into numerical features
-python scripts/featurize_data.py
+# Process SMILES strings into numerical features, the model id needs to be set to the one you want, the default in this repo is eos39co.
+python scripts/featurize_data.py --model_id eos39co
 ```
 
 This script:
-- Converts SMILES representations to RDKit molecular objects
-- Calculates molecular descriptors (over 200 features) including:
-  - Physical properties (MW, LogP, TPSA)
-  - Topological indices
-  - Functional group counts
-  - Connectivity information
-  - Quantum mechanical properties (if available)
-- Handles missing values and normalization
-- Saves features to `data/featurized_data/`
+- Serves the Uni-Mol (eos39co) model for molecular featurization.
+- Reads molecular data from CSV files in data/download_data.
+- Extracts 3D molecular representations using the model.
+- Handles errors and missing files with logging.
+- Supports command-line arguments to specify the model ID.
+- Ensures output directories exist before processing.
+- Runs the featurization process for all available input files.
+- Saves featurized outputs to `data/featurized_data/`
 
 ### Feature Output Structure
 ```
@@ -191,36 +177,31 @@ The project implements several machine learning approaches:
 2. **LightGBM**: Light Gradient Boosting Machine, optimized for efficiency
 3. **Logistic Regression**: Baseline linear model for comparison
 
+The default model for this project is XGBoost but you can use lightgbm or logistic regression by using the indentifier lightgbm and logistic respectively.
+
 ### Training the Model
 ```bash
-python scripts/train_model.py --model xgboost
+python scripts/modelling.py --model xgboost
 ```
 
 Command line options:
 - `--model [xgboost|lightgbm|logistic]`: Select model type
-- `--hyperopt`: Enable hyperparameter optimization
-- `--cross_val [N]`: Perform N-fold cross-validation
-- `--output [filename]`: Specify output model filename
 
 ### Model Configuration
-#### XGBoost Configuration
-| Parameter | Value | Purpose |
-|-----------|-------|---------|
-| Learning Rate | 0.01 | Gradual, robust learning |
-| Max Depth | 6 | Control tree complexity |
-| Subsample | 0.8 | Prevent overfitting |
-| Col Sample by Tree | 0.8 | Feature randomness |
-| Early Stopping | 50 rounds | Optimal model selection |
-| Objective | binary:logistic | Binary classification task |
-| Scale Pos Weight | Calculated | Address class imbalance |
-
-### Class Imbalance Handling
-The dataset has a class imbalance (76.41% permeable vs. 23.59% non-permeable). The following strategies are implemented:
-
-- **Scale Positive Weight**: Adjusts for class imbalance in tree-based models
-- **SMOTE** (optional): Synthetic Minority Over-sampling Technique
-- **Class Weighting**: Weighting samples inversely proportional to class frequencies
-- **Balanced Evaluation Metrics**: Using precision, recall, F1 and AUC for proper assessment
+#### XGBoost Configuration  
+| Parameter             | Value  | Purpose                         |  
+|-----------------------|--------|---------------------------------|  
+| **Learning Rate**     | 0.01   | Controls step size in updates for gradual learning |  
+| **Max Depth**        | 6      | Limits tree complexity to prevent overfitting |  
+| **Min Child Weight**  | 1      | Minimum sum of instance weight needed in a child node |  
+| **Subsample**        | 0.8    | Randomly samples data to prevent overfitting |  
+| **Col Sample by Tree** | 0.8   | Controls feature sampling for more robust trees |  
+| **N Estimators**      | 500    | Number of boosting rounds (trees) |  
+| **Early Stopping**    | 50 rounds | Stops training when no improvement is seen |  
+| **Objective**        | binary:logistic | Optimized for binary classification |  
+| **Eval Metric**      | auc    | Uses AUC (Area Under Curve) for evaluation |  
+| **Random State**      | 42     | Ensures reproducibility of results |  
+| **Use Label Encoder** | False  | Avoids using deprecated label encoding |
 
 ## 📊 Model Evaluation
 
@@ -267,30 +248,6 @@ model = xgb.XGBClassifier(
 )
 ```
 
-### Hyperparameter Optimization
-For automated hyperparameter tuning:
-```bash
-python scripts/train_model.py --model xgboost --hyperopt
-```
-
-This uses Bayesian optimization to find optimal parameters based on validation performance.
-
-### Cross-Validation
-For more robust model assessment:
-```bash
-python scripts/train_model.py --model xgboost --cross_val 5
-```
-
-This performs 5-fold cross-validation and reports aggregated performance metrics.
-
-### Ensemble Methods
-To combine multiple models for improved performance:
-```bash
-python scripts/train_model.py --ensemble
-```
-
-This trains and combines XGBoost, LightGBM, and Logistic Regression models using a voting classifier.
-
 ## 📋 Logging and Monitoring
 - Dataset download logs: `~/dataset_download.log`
 - Model training logs: `models/bbb_training.log`
@@ -309,8 +266,4 @@ This trains and combines XGBoost, LightGBM, and Logistic Regression models using
 - [RDKit](https://www.rdkit.org/) for molecular visualization and processing
 - Contributors to the open-source ML libraries used in this project
 
-## 📬 Contact
-[Your Contact Information]
 
-## 📜 License
-[Your License Information]
