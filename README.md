@@ -233,10 +233,4 @@ The evaluation script generates detailed visualizations in `data/plots/`:
 - All processes include detailed logging for monitoring
 
 
-## 🙏 Acknowledgments
-- [Therapeutics Data Commons (TDC)](https://tdcommons.ai/) for the BBB permeability dataset
-- [Ersilia Model Hub](https://ersilia.io/) for molecular featurization tools
-- [RDKit](https://www.rdkit.org/) for molecular visualization and processing
-- Contributors to the open-source ML libraries used in this project
-
 
