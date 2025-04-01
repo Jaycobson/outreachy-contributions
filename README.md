@@ -232,12 +232,6 @@ The evaluation script generates detailed visualizations in `data/plots/`:
 - Model training logs: `models/bbb_training.log`
 - All processes include detailed logging for monitoring
 
-## 🔮 Future Work
-- Implement deep learning approaches (Graph Neural Networks)
-- Incorporate additional datasets for transfer learning
-- Add interpretability tools for medicinal chemists
-- Develop a web interface for prediction
-- Include structural alerts for BBB-impermeable compounds
 
 ## 🙏 Acknowledgments
 - [Therapeutics Data Commons (TDC)](https://tdcommons.ai/) for the BBB permeability dataset
