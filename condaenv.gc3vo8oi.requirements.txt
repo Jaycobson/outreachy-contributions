@@ -1,0 +1,14 @@
+numpy
+pandas
+scikit-learn
+ersilia
+pytdc
+tqdm
+rdkit
+matplotlib
+seaborn
+joblib
+multiprocess
+requests
+ipython
+ipywidgets
