@@ -18,11 +18,11 @@ The BBB_Martins dataset is vital for neuropharmaceutical research:
 | Feature | Description |
 |---------|-------------|
 | Dataset Source | [Therapeutics Data Commons (TDC)](https://tdcommons.ai/single_pred_tasks/adme#bbb-blood-brain-barrier-martins-et-al) |
-| Research Papers | 1. Martins, Ines Filipa, et al. *Journal of Chemical Information and Modeling*, 52.6 (2012): 1686-1697. <br> 2. Wu, Zhenqin, et al. *Chemical Science*, 9.2 (2018): 513-530. |
+| Research Papers | [1]. Martins, Ines Filipa, et al. *Journal of Chemical Information and Modeling*, 52.6 (2012): 1686-1697. <br> [2]. Wu, Zhenqin, et al. *Chemical Science*, 9.2 (2018): 513-530. |
 | Biological Barrier | Blood-Brain Barrier - critical for CNS drug development |
 | Measurement | Binary permeability outcome (can/cannot cross BBB) |
 | Data Quality | Well-curated but imbalanced dataset with multiple splits for robust validation |
-| Applications | Essential for developing treatments for Alzheimer's, Parkinson's and brain cancer<br> (Abbott NJ, Patabendige AA, Dolman DE, Yusof SR, Begley DJ. “Structure and function of the blood–brain barrier.” Neurobiology of Disease, 37(1): 13–25, 2010. doi: 10.1016/j.nbd.2009.07.030)[https://www.sciencedirect.com/science/article/abs/pii/S0969996109002083]|
+| Applications | Essential for developing treatments for Alzheimer's, Parkinson's and brain cancer<br> [Abbott NJ, Patabendige AA, Dolman DE, Yusof SR, Begley DJ. “Structure and function of the blood–brain barrier.” Neurobiology of Disease, 37(1): 13–25, 2010. doi: 10.1016/j.nbd.2009.07.030](https://www.sciencedirect.com/science/article/abs/pii/S0969996109002083)|
 
 ## 🔍 Understanding the Data
 ### Experimental Background
