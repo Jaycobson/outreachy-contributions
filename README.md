@@ -89,7 +89,7 @@ conda env create --file env.yml
 conda activate bbb
 ```
 
-The `environment.yml` file includes all necessary dependencies:
+The `env.yml` file includes all necessary dependencies:
 - ersilia (for molecular featurization)
 - rdkit
 - scikit-learn
@@ -101,7 +101,7 @@ The `environment.yml` file includes all necessary dependencies:
 - seaborn
 - jupyter
 
-3. **Dataset Acquisition**
+## 📈 **Dataset Acquisition**
 ```bash
 # To download it, run:
 python scripts/download_data.py --dataset BBB_Martins
