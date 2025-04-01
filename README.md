@@ -1,7 +1,7 @@
-# 🧠 Blood-Brain Barrier (BBB) Permeability Prediction 🔬
+# Blood-Brain Barrier (BBB) Permeability Prediction 🔬
 
 ## 🎯 Project Overview
-This project develops a machine learning model to predict whether drug compounds can cross the blood-brain barrier, a critical factor in developing effective treatments for neurological disorders. Using the BBB_Martins dataset from Therapeutics Data Commons (TDC), I've built a comprehensive pipeline for data acquisition, visualization, molecular feature extraction and model development.
+In this project, a machine learning model is trained to predict whether drug compounds can cross the blood-brain barrier, a critical factor in developing effective treatments for neurological disorders. Using the BBB_Martins dataset from Therapeutics Data Commons (TDC), I've built a comprehensive pipeline for data acquisition, visualization, molecular feature extraction and model development.
 
 The blood-brain barrier is a selective, semi-permeable membrane that protects the brain and central nervous system (CNS) from harmful materials in the bloodstream. BBB permeability of molecules is crucial in drug discovery and development for several reasons:
 
@@ -17,7 +17,7 @@ The BBB_Martins dataset is vital for neuropharmaceutical research:
 
 | Feature | Description |
 |---------|-------------|
-| Dataset Source | Therapeutics Data Commons (TDC) |
+| Dataset Source | Therapeutics Data Commons (TDC)[https://tdcommons.ai/single_pred_tasks/adme#bbb-blood-brain-barrier-martins-et-al] |
 | Original Research | Martins, I. F., et al. (2012). A Bayesian approach to in silico blood–brain barrier penetration modeling. *Journal of Chemical Information and Modeling, 52*(6), 1686-1697. DOI:10.1021/ci300124c |
 | Biological Barrier | Blood-Brain Barrier - critical for CNS drug development |
 | Measurement | Binary permeability outcome (can/cannot cross BBB) |
