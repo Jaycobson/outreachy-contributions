@@ -6,8 +6,6 @@ using featurized datasets. It extracts target values from original data files
 and includes data loading, preprocessing, model training, evaluation, and 
 visualization with optimized performance tuning.
 
-Command-line usage:
-    python script.py --model [xgboost|lightgbm|logistic]
 """
 
 import os
