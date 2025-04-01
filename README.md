@@ -53,8 +53,6 @@ bbb-prediction/
 │   ├── xgboost/             # XGBoost models
 ├── notebooks/               # Stores notebooks
 │   ├── analysis.ipynb       # Main notebook for visualization and analysis
-│   ├── exploration.ipynb    # Initial data exploration
-│   └── evaluation.ipynb     # Detailed model evaluation
 ├── scripts/
 │   ├── download_data.py     # Dataset acquisition script
 │   ├── featurize_data.py    # Molecular featurization script
