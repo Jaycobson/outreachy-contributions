@@ -18,7 +18,9 @@ The BBB_Martins dataset is vital for neuropharmaceutical research:
 | Feature | Description |
 |---------|-------------|
 | Dataset Source | [Therapeutics Data Commons (TDC)](https://tdcommons.ai/single_pred_tasks/adme#bbb-blood-brain-barrier-martins-et-al) |
-| Original Research | Martins, I. F., et al. (2012). A Bayesian approach to in silico blood–brain barrier penetration modeling. *Journal of Chemical Information and Modeling, 52*(6), 1686-1697. DOI:10.1021/ci300124c |
+| Research Papers | [1] Martins, Ines Filipa, et al. “A Bayesian approach to in silico blood-brain barrier penetration modeling.” Journal of chemical information and modeling 52.6 (2012): 1686-1697.
+
+[2] Wu, Zhenqin, et al. “MoleculeNet: a benchmark for molecular machine learning.” Chemical science 9.2 (2018): 513-530. |
 | Biological Barrier | Blood-Brain Barrier - critical for CNS drug development |
 | Measurement | Binary permeability outcome (can/cannot cross BBB) |
 | Data Quality | Well-curated dataset with multiple splits for robust validation but imbalanced |
