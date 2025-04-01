@@ -78,7 +78,7 @@ bbb-prediction/
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/jaycobson/bbb-prediction.git
+[git clone https://github.com/jaycobson/bbb-prediction.git](https://github.com/Jaycobson/outreachy-contributions.git)
 cd bbb-prediction
 ```
 
@@ -226,27 +226,6 @@ The evaluation script generates detailed visualizations in `data/plots/`:
 - **Learning Curves**: Training and validation metrics
 - **Feature Importance Plots**: Most influential molecular properties
 
-### Interpretation
-Special focus is given to model interpretability:
-- **SHAP Values**: Explains individual predictions
-- **Feature Importance Analysis**: Identifies key molecular characteristics
-- **Decision Boundary Visualization**: Helps understand model behavior
-
-## 🔗 Advanced Usage
-
-### Custom Model Parameters
-Modify model parameters directly in `train_model.py`:
-```python
-# Example: Adjusting XGBoost parameters
-model = xgb.XGBClassifier(
-    learning_rate=0.005,  # More conservative learning
-    max_depth=8,          # Deeper trees
-    subsample=0.7,        # Different subsampling
-    colsample_bytree=0.7, # Different feature selection
-    scale_pos_weight=class_weight, # Calculated class weight
-    # Other parameters...
-)
-```
 
 ## 📋 Logging and Monitoring
 - Dataset download logs: `~/dataset_download.log`
