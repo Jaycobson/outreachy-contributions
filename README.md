@@ -68,7 +68,7 @@ bbb-prediction/
 ## 🔧 Setup Instructions
 
 ### Prerequisites
-- Python 3.9 or later
+- Python 3.12.9 or later
 - Miniconda/Anaconda
 - Ubuntu OS or WSL (if system OS is Windows)
 - Docker (for Ersilia models)
@@ -78,7 +78,7 @@ bbb-prediction/
 
 1. **Clone the repository**
 ```bash
-[git clone https://github.com/jaycobson/bbb-prediction.git](https://github.com/Jaycobson/outreachy-contributions.git)
+git clone https://github.com/jaycobson/bbb-prediction.git
 cd bbb-prediction
 ```
 
