@@ -369,6 +369,14 @@ This document compares the performance of different modeling approaches for our 
   - The eos24ci base model offers the best balance of performance (test accuracy: 0.8571, F1: 0.9097)
   - It shows less overfitting than eos39co models and outperforms all other variants on test data
 
+## Model Interpretability
+
+![Shapely_image](https://github.com/user-attachments/assets/e600c691-5450-4e3c-8f96-06961a87f0bf)
+
+After analysing the XGBoost model's feature importance using SHAP (SHapley Additive exPlanations) values to understand how different chemical descriptors influence predictions. The analysis revealed that carbon-related features (`char_C`), fluorine atoms (`char_F`), and aromatic rings have the strongest positive impact on model predictions when present in high concentrations. Also, features like `char_@` and organic nitrogen compounds tend to decrease predicted values. 
+
+Several functional groups show complex, non-linear relationships where their impact direction varies based on concentration. The SHAP visualization confirms that our model heavily weighs specific chemical structural elements, validating its ability to capture meaningful chemical patterns related to the target property.
+
 ### 📋 Logging and Monitoring
 - Model training logs: `models/bbb_training.log`
 - All processes include detailed logging for monitoring progress and errors
