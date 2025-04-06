@@ -128,42 +128,73 @@ The notebook includes:
 - Class distribution analysis
 - Chemical property visualization (molecular weight, LogP, etc.)
 
-## 🚀 Molecular Featurization
-This project leverages the Uni-Mol molecular representation model from the [Ersilia Model Hub](https://www.ersilia.io/model-hub) for advanced molecular featurization. The model is also available in this [github repository](https://github.com/ersilia-os/eos39co).
+## 🧪 Molecular Featurization
 
-Uni-Mol employs an SE(3) equivariant transformer architecture, designed to capture intricate 3D molecular structures. Trained on over 200 million conformations, it generates high-quality molecular embeddings, enhancing predictive performance in cheminformatics and drug discovery applications. Its model id is eos39co in the Ersilia Model Hub
+This project utilizes two different molecular featurization approaches from the [Ersilia Model Hub](https://www.ersilia.io/model-hub):
 
-### Setup Ersilia Model
+### Default Featurizer: Uni-Mol (eos39co)
+
+Uni-Mol is the primary molecular representation model used in this project. This advanced featurizer employs an SE(3) equivariant transformer architecture designed to capture intricate 3D molecular structures. Key characteristics include:
+
+- **Architecture**: SE(3) equivariant transformer for 3D molecular representation
+- **Training Data**: Over 200 million molecular conformations
+- **Output**: High-dimensional embeddings capturing 3D structural information
+- **Strength**: Excellent at representing spatial relationships within molecules
+- **Model ID**: eos39co in the Ersilia Model Hub
+- **GitHub**: [https://github.com/ersilia-os/eos39co](https://github.com/ersilia-os/eos39co)
+
+Uni-Mol was selected as the default featurizer due to its ability to capture complex 3D structural information crucial for predicting BBB permeability, where spatial arrangements significantly impact barrier penetration.
+
+### Alternative Featurizer: DrugTax (eos24ci)
+
+DrugTax was explored as an alternative featurization approach. Unlike Uni-Mol's focus on 3D structure, DrugTax classifies molecules according to their chemical taxonomy:
+
+- **Approach**: Taxonomy-based classification of molecular structures
+- **Input**: SMILES notation
+- **Output**: 163-dimensional binary feature vector
+- **Features Include**:
+  - Organic/inorganic kingdom classification
+  - Chemical subclass categorization (0/1 binary classification for each class)
+  - Molecular composition metrics (number of carbons, nitrogens, etc.)
+- **Model ID**: eos24ci in the Ersilia Model Hub
+
+
+While Uni-Mol remains the default and recommended featurizer for this project, DrugTax was tested to evaluate whether taxonomic classification could provide valuable alternative insights for BBB permeability prediction.
+
+### Setup and Feature Generation
+
+#### Setup Ersilia Models
 ```bash
 # Install Ersilia if not already installed
 pip install ersilia
 
-# Fetch and serve the model
+# Fetch and serve the default Uni-Mol model
 ersilia fetch eos39co
 ersilia serve eos39co
+
+# Or fetch and serve the alternative DrugTax model if you want to experiment with it
+# ersilia fetch eos24ci
+# ersilia serve eos24ci
 ```
 
-### Generate Features
+#### Generate Features
 ```bash
-# Process SMILES strings into numerical features, the model id needs to be set to the one you want, the default in this repo is eos39co.
+# Process SMILES using the default Uni-Mol featurizer
 python scripts/featurize_data.py --model_id eos39co
-```
 
-This script:
-- Serves the Uni-Mol (eos39co) model for molecular featurization.
-- Reads molecular data from CSV files in data/download_data.
-- Extracts 3D molecular representations using the model.
-- Handles errors and missing files with logging.
-- Supports command-line arguments to specify the model ID.
-- Ensures output directories exist before processing.
-- Runs the featurization process for all available input files.
-- Saves featurized outputs to `data/featurized_data/`
+# Or use the alternative DrugTax featurizer
+# python scripts/featurize_data.py --model_id eos24ci
+```
 
 ### Feature Output Structure
 ```
 data/
 ├── featurized_data/
-|   ├──featurized_data_with_eos39co
+│   ├── featurized_data_with_eos39co/   # Uni-Mol features (default)
+│   │   ├── BBB_Martins_train_features.csv
+│   │   ├── BBB_Martins_valid_features.csv
+│   │   ├── BBB_Martins_test_features.csv
+│   ├── featurized_data_with_eos24ci/   # DrugTax features (alternative)
 │   │   ├── BBB_Martins_train_features.csv
 │   │   ├── BBB_Martins_valid_features.csv
 │   │   ├── BBB_Martins_test_features.csv
@@ -171,67 +202,124 @@ data/
 
 ## 🧠 Model Development
 
-### Available Models
+The modeling script provides a comprehensive framework for training and evaluating different models with customizable options for feature processing, dimensionality reduction and handling class imbalance.
+
+### 🛠️ Available Models
 The project implements several machine learning approaches:
 
 1. **XGBoost** (Default): Gradient boosting framework known for performance on tabular data
 2. **LightGBM**: Light Gradient Boosting Machine, optimized for efficiency
 3. **Logistic Regression**: Baseline linear model for comparison
 
-The default model for this project is XGBoost but you can use lightgbm or logistic regression by using the indentifier lightgbm and logistic respectively.
+### 🧬 Feature Engineering Options
+The pipeline supports multiple molecular featurization methods:
 
-### Training the Model
+- **eos39co** (Default): Uni-Mol 3D molecular representation from Ersilia Model Hub
+- **eos24ci**: DrugTax: Drug taxonomy representation model
+
+### 📊 Training Options
+
+#### Basic Model Training
+Train a basic XGBoost model using the default Uni-Mol featurizer. This is the simplest approach to start with.
+
 ```bash
-python scripts/modelling.py --model xgboost
+python scripts/modelling.py --model xgboost --feat eos39co
 ```
 
-Command line options:
-- `--model [xgboost|lightgbm|logistic]`: Select model type
+#### Using Different Model Types
+Try LightGBM or Logistic Regression instead of XGBoost to compare performance.
 
-### Model Configuration
-#### XGBoost Configuration  
-| Parameter             | Value  | Purpose                         |  
-|-----------------------|--------|---------------------------------|  
-| **Learning Rate**     | 0.01   | Controls step size in updates for gradual learning |  
-| **Max Depth**        | 6      | Limits tree complexity to prevent overfitting |  
-| **Min Child Weight**  | 1      | Minimum sum of instance weight needed in a child node |  
-| **Subsample**        | 0.8    | Randomly samples data to prevent overfitting |  
-| **Col Sample by Tree** | 0.8   | Controls feature sampling for more robust trees |  
-| **N Estimators**      | 500    | Number of boosting rounds (trees) |  
-| **Early Stopping**    | 50 rounds | Stops training when no improvement is seen |  
-| **Objective**        | binary:logistic | Optimized for binary classification |  
-| **Eval Metric**      | auc    | Uses AUC (Area Under Curve) for evaluation |  
-| **Random State**      | 42     | Ensures reproducibility of results |  
-| **Use Label Encoder** | False  | Avoids using deprecated label encoding |
+```bash
+# Use LightGBM model
+python scripts/modelling.py --model lightgbm --feat eos39co
 
-## 📊 Model Evaluation
+# Use Logistic Regression model
+python scripts/modelling.py --model logistic --feat eos39co
+```
 
-### Performance Metrics
-The model is evaluated using multiple metrics to ensure robust assessment:
+#### Changing Featurization Method
+Switch to an alternative molecular featurization method if needed.
 
-| Metric | Description | Importance for BBB Prediction |
-|--------|-------------|--------------------------|
-| Accuracy | Overall prediction correctness | Baseline metric |
-| Precision | Positive predictive value | Critical for identifying true BBB+ compounds |
-| Recall | True positive rate | Important for not missing potential BBB+ drugs |
-| F1-Score | Harmonic mean of precision and recall | Balanced measure for imbalanced data |
-| ROC-AUC | Area under ROC curve | Overall discrimination ability |
-| PR-AUC | Area under precision-recall curve | Better for imbalanced datasets |
+```bash
+python scripts/modelling.py --model xgboost --feat eos24ci
+```
 
-### Performance Visualization
-The evaluation script generates detailed visualizations in `data/plots/`:
+#### Adding Dimensionality Reduction
+Use PCA to reduce feature dimensions, which can help with computational efficiency and prevent overfitting.
+You can specify either a specific number of components or a variance ratio to retain.
 
-- **ROC Curves**: True vs false positive rates
-- **Confusion Matrices**: True vs predicted permeability
-- **Precision-Recall Curves**: Better for imbalanced datasets
-- **Learning Curves**: Training and validation metrics
-- **Feature Importance Plots**: Most influential molecular properties
+```bash
+# Keep exactly 100 principal components
+python scripts/modelling.py --model xgboost --feat eos39co --pca 100
 
+# Keep enough components to retain 95% of variance
+python scripts/modelling.py --model xgboost --feat eos39co --pca 0.95
+```
 
-## 📋 Logging and Monitoring
-- Dataset download logs: `~/dataset_download.log`
+#### Handling Class Imbalance
+Add SMOTE oversampling to address the imbalance between BBB-permeable and non-permeable classes.
+
+```bash
+python scripts/modelling.py --model xgboost --feat eos39co --smote
+```
+
+#### Feature Importance Analysis
+Enable SHAP analysis to understand which molecular features most influence the predictions.
+
+```bash
+python scripts/modelling.py --model xgboost --feat eos39co --shap
+```
+
+#### Complete Configuration Example
+Combine all options for advanced model training with dimensionality reduction, class balancing, and feature analysis.
+
+```bash
+python scripts/modelling.py --model lightgbm --feat eos39co --pca 0.95 --smote --shap
+```
+
+### 📁 Model Artifacts
+
+Each run saves trained models and preprocessing objects for later use:
+
+```
+models/{config_id}/             # Model artifacts
+├── model.pkl                   # Serialized trained model
+├── scaler.pkl                  # Fitted feature scaler
+```
+
+### 📊 Evaluation Results
+
+Performance metrics and configuration details are saved in dedicated directories:
+
+```
+data/results/{config_id}/       # Performance metrics
+├── metrics.json                # Detailed performance metrics
+├── config.json                 # Configuration details
+├── config.txt                  # Human-readable configuration
+```
+
+### 📈 Visualization Outputs
+
+Visual representations of model performance are generated automatically:
+
+```
+data/plots/{config_id}/         # Visualizations
+├── confusion_matrix_train.png  # Training confusion matrix
+├── confusion_matrix_valid.png  # Validation confusion matrix
+├── confusion_matrix_test.png   # Test confusion matrix
+├── shap_summary_plot.png       # Feature importance (if --shap enabled)
+```
+
+### 📊 Model Evaluation
+
+The evaluation includes detailed metrics for each data split:
+- **Accuracy**: Overall prediction accuracy
+- **F1 Score**: Harmonic mean of precision and recall
+
+### 🔍 Comparing Model Configurations
+
+To easily compare different model setups, results are organized in separate directories with unique configuration IDs. This helps you determine which combination of model type, features, and processing techniques works best for BBB permeability prediction.
+
+### 📋 Logging and Monitoring
 - Model training logs: `models/bbb_training.log`
-- All processes include detailed logging for monitoring
-
-
-
+- All processes include detailed logging for monitoring progress and errors
