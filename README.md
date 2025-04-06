@@ -320,6 +320,37 @@ The evaluation includes detailed metrics for each data split:
 
 To easily compare different model setups, results are organized in separate directories with unique configuration IDs. This helps you determine which combination of model type, features, and processing techniques works best for BBB permeability prediction.
 
+# Model Performance Comparison
+
+This document compares the performance of different modeling approaches for our classification task.
+
+## Models Overview
+
+| Model ID | Model Type | Featurizer | PCA | SMOTE |
+|----------|------------|------------|-----|-------|
+| xgboost_eos39co | XGBoost | eos39co | No | No |
+| xgboost_eos39co_pca0.95_ | XGBoost | eos39co | 0.95 | No |
+| xgboost_eos39co_pca0.95__smote | XGBoost | eos39co | 0.95 | Yes |
+
+## Consolidated Performance Metrics
+
+| Model ID | Train Accuracy | Train F1 | Valid Accuracy | Valid F1 | Test Accuracy | Test F1 |
+|----------|---------------|----------|----------------|----------|--------------|---------|
+| xgboost_eos39co | 0.9986 | 0.9991 | 0.8916 | 0.9317 | 0.8300 | 0.8937 |
+| xgboost_eos39co_pca0.95_ | 0.9986 | 0.9991 | 0.8768 | 0.9235 | 0.8300 | 0.8956 |
+| xgboost_eos39co_pca0.95__smote | 0.9986 | 0.9991 | 0.8867 | 0.9279 | 0.8202 | 0.8836 |
+
+## Analysis
+
+- All models achieve nearly perfect performance on the training data (accuracy: 0.9986, F1: 0.9991)
+- The base model (no PCA, no SMOTE) performs best on validation data (accuracy: 0.8916, F1: 0.9317)
+- Both non-SMOTE models achieve the same test accuracy (0.8300), with the PCA variant having a slightly higher F1 score (0.8956)
+- The SMOTE variant shows slightly lower test performance (accuracy: 0.8202, F1: 0.8836)
+- There appears to be some overfitting in all models as indicated by the gap between training and test metrics
+
+## Next Steps
+
+Additional modeling approaches will be added to this comparison to evaluate relative performance.
 ### 📋 Logging and Monitoring
 - Model training logs: `models/bbb_training.log`
 - All processes include detailed logging for monitoring progress and errors
