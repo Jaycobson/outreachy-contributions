@@ -368,27 +368,7 @@ This document compares the performance of different modeling approaches for our 
 - Best model recommendation:
   - The eos24ci base model offers the best balance of performance (test accuracy: 0.8571, F1: 0.9097)
   - It shows less overfitting than eos39co models and outperforms all other variants on test data
-## Analysis
 
-- All models achieve nearly perfect performance on the training data (accuracy: 0.9986, F1: 0.9991)
-- The base model (no PCA, no SMOTE) performs best on validation data (accuracy: 0.8916, F1: 0.9317)
-- Both non-SMOTE models achieve the same test accuracy (0.8300), with the PCA variant having a slightly higher F1 score (0.8956)
-- The SMOTE variant shows slightly lower test performance (accuracy: 0.8202, F1: 0.8836)
-- There appears to be some overfitting in all models as indicated by the gap between training and test metrics
-
-## Analysis
-- All models show strong performance on training data, with the PCA models achieving higher training metrics (accuracy ~0.995, F1 ~0.997) compared to the base model
-- The base model (no PCA, no SMOTE) performs best on validation data (accuracy: 0.9015, F1: 0.9371) and test data (accuracy: 0.8571, F1: 0.9097)
-- Adding PCA (0.95) reduces validation and test performance slightly
-- Adding SMOTE further reduces performance across validation and test sets
-- There appears to be some overfitting in all models as indicated by the gap between training and test metrics, with the PCA models showing a larger gap
-
-
-## Next Steps
-Additional modeling approaches will be added to this comparison to evaluate relative performance.
-## Next Steps
-
-Additional modeling approaches will be added to this comparison to evaluate relative performance.
 ### 📋 Logging and Monitoring
 - Model training logs: `models/bbb_training.log`
 - All processes include detailed logging for monitoring progress and errors
