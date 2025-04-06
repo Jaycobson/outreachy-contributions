@@ -371,7 +371,20 @@ This document compares the performance of different modeling approaches for our 
 
 ## Model Interpretability using the xgboost model with featurizer eos24ci(DrugTax)
 
-![Shapely_image](https://github.com/user-attachments/assets/e600c691-5450-4e3c-8f96-06961a87f0bf)
+![Shapely_image]()
+![DrugTax (eos24ci)](https://github.com/user-attachments/assets/e600c691-5450-4e3c-8f96-06961a87f0bf) ![Uni-Mol (eos39co)](https://github.com/user-attachments/assets/887f9d22-2838-4092-bbd9-7d536ec6941e)
+
+<p align="center">
+  <img src="[path/to/image1.png](https://github.com/user-attachments/assets/e600c691-5450-4e3c-8f96-06961a87f0bf)" alt="DrugTax" width="300"/>
+  <img src="https://github.com/user-attachments/assets/887f9d22-2838-4092-bbd9-7d536ec6941e" alt="Uni-Mol" width="300"/>
+</p>
+
+<p align="center">
+  <b>Uni-Mol (eos39co)</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <b>DrugTax (eos24ci)</b>
+</p>
+
+
 
 The reason why eos24ci featurizer(DrugTax) was used for analysis is because the features can be easily interpreter rather than using that of the Unimol which contains features that are not easy to interpret. 
 
