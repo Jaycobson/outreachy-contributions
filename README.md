@@ -375,13 +375,13 @@ This document compares the performance of different modeling approaches for our 
 ![DrugTax (eos24ci)](https://github.com/user-attachments/assets/e600c691-5450-4e3c-8f96-06961a87f0bf) ![Uni-Mol (eos39co)](https://github.com/user-attachments/assets/887f9d22-2838-4092-bbd9-7d536ec6941e)
 ```
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/e600c691-5450-4e3c-8f96-06961a87f0bf" alt="DrugTax" width="300"/>
-  <img src="https://github.com/user-attachments/assets/887f9d22-2838-4092-bbd9-7d536ec6941e" alt="Uni-Mol" width="300"/>
+  <img src="https://github.com/user-attachments/assets/e600c691-5450-4e3c-8f96-06961a87f0bf" alt="DrugTax" width="500"/>
+  <img src="https://github.com/user-attachments/assets/887f9d22-2838-4092-bbd9-7d536ec6941e" alt="Uni-Mol" width="500"/>
 </p>
 
 <p align="center">
-  <b>Uni-Mol (eos39co)</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <b>DrugTax (eos24ci)</b>
+  <b>DrugTax (eos24ci)</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <b>Uni-Mol (eos39co)</b>
 </p>
 
 
