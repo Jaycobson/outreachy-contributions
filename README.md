@@ -98,13 +98,15 @@ The `env.yml` file includes all necessary dependencies:
 - matplotlib
 - seaborn
 - jupyter
+- shap
+- imblearn
 
 ## 📈 **Dataset Acquisition**
 ```bash
 # To download it, run:
 python scripts/download_data.py --dataset BBB_Martins
 ```
-You need to specify the dataset you want to download, the default on the CLI is BBB_Martins. If you need to download another kind of data, kindly specify the dataset name.
+You need to specify the dataset you want to download, the default on the CLI is BBB_Martins. If you need to download another kind of data in ADME, kindly specify the dataset name.
 
 This script:
 - Downloads the BBB_Martins dataset from TDC
@@ -113,7 +115,7 @@ This script:
 
 ## 🧪 Data Exploration and Visualization
 
-To explore the dataset and understand the molecular properties:
+To explore the dataset and understand the molecular properties, You can navigate to the notebooks dir and run the analysis.ipynb which shows you an analysis of the datasets.
 
 ```bash
 Navigate notebooks -> analysis.ipynb 
@@ -161,9 +163,10 @@ This script:
 ```
 data/
 ├── featurized_data/
-│   ├── BBB_Martins_train_features.csv
-│   ├── BBB_Martins_valid_features.csv
-│   ├── BBB_Martins_test_features.csv
+|   ├──featurized_data_with_eos39co
+│   │   ├── BBB_Martins_train_features.csv
+│   │   ├── BBB_Martins_valid_features.csv
+│   │   ├── BBB_Martins_test_features.csv
 ```
 
 ## 🧠 Model Development

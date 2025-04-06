@@ -1,243 +1,479 @@
-"""
-Advanced BBB Permeability Prediction using Multiple Models
+# import os
+# import logging
+# import argparse
+# import pandas as pd
+# import numpy as np
+# import matplotlib.pyplot as plt
+# import seaborn as sns
+# import pickle
+# import json
 
-This script trains a model to predict blood-brain barrier (BBB) permeability
-using featurized datasets. It extracts target values from original data files
-and includes data loading, preprocessing, model training, evaluation, and 
-visualization with optimized performance tuning.
+# import shap
+# from sklearn.decomposition import PCA
+# from sklearn.preprocessing import StandardScaler
+# from sklearn.metrics import (
+#     accuracy_score, precision_score, recall_score, f1_score,
+#     roc_auc_score, average_precision_score, confusion_matrix
+# )
 
-"""
+# from lightgbm import LGBMClassifier
+# from sklearn.linear_model import LogisticRegression
+# import xgboost as xgb
+# from imblearn.over_sampling import SMOTE  # Import SMOTE
+
+# # ---------------------- Logging Setup ----------------------
+# logging.basicConfig(
+#     level=logging.INFO,
+#     format="%(asctime)s - %(levelname)s - %(message)s",
+#     handlers=[
+#         logging.FileHandler("models/bbb_training.log"),
+#         logging.StreamHandler()
+#     ]
+# )
+
+# # ---------------------- Argument Parser ----------------------
+# def parse_args():
+#     parser = argparse.ArgumentParser(description="BBB Permeability Prediction")
+#     parser.add_argument("--model", choices=["xgboost", "lightgbm", "logistic"], default="xgboost")
+#     parser.add_argument("--feat", choices=["eos39co", "eos24ci"], default="eos39co")
+#     parser.add_argument("--pca", type=float, default=None, help="PCA components (e.g. 100 or 0.95 for 95% variance)")
+#     parser.add_argument("--shap", action="store_true", help="Enable SHAP analysis")
+#     parser.add_argument("--smote", action="store_true", help="Enable SMOTE oversampling")
+#     return parser.parse_args()
+
+
+# # ---------------------- Directory Setup ----------------------
+# def create_dirs(model_type, featurizer):
+#     os.makedirs(f"models/models_for_{featurizer}/{model_type}", exist_ok=True)
+#     os.makedirs(f"data/plots/plots_for_{featurizer}", exist_ok=True)
+#     os.makedirs(f"data/results/results_for_{featurizer}", exist_ok=True)  # Add directory for results
+    
+
+# # ---------------------- Data Loader ----------------------
+# def load_data(feat_type):
+#     data = {}
+#     for split in ['train', 'valid', 'test']:
+#         X = pd.read_csv(f"data/featurized_data/featurized_data_with_{feat_type}/BBB_Martins_{split}_features.csv")
+#         y = pd.read_csv(f"data/download_data/BBB_Martins_{split}.csv")['Y'].astype(int)
+#         if len(X) != len(y):
+#             raise ValueError(f"Mismatch in {split}: {len(X)} features vs {len(y)} targets")
+#         data[split] = {'X': X, 'y': y}
+#         logging.info(f"{split.title()} loaded: {X.shape[0]} samples, {X.shape[1]} features")
+#     return data
+
+# # ---------------------- Preprocessing with Optional PCA ----------------------
+# def preprocess(X_train, X_valid, X_test, pca_option=None):
+#     feature_cols = X_train.columns[2:]  # assume first 2 columns are ID/SMILES
+
+#     # Fill missing values with train means
+#     for col in feature_cols:
+#         mean = X_train[col].mean()
+#         X_train[col].fillna(mean, inplace=True)
+#         X_valid[col].fillna(mean, inplace=True)
+#         X_test[col].fillna(mean, inplace=True)
+
+#     scaler = StandardScaler()
+#     X_train_scaled = scaler.fit_transform(X_train[feature_cols])
+#     X_valid_scaled = scaler.transform(X_valid[feature_cols])
+#     X_test_scaled = scaler.transform(X_test[feature_cols])
+
+#     if pca_option is not None:
+#         pca = PCA(n_components=pca_option)
+#         X_train_scaled = pca.fit_transform(X_train_scaled)
+#         X_valid_scaled = pca.transform(X_valid_scaled)
+#         X_test_scaled = pca.transform(X_test_scaled)
+#         logging.info(f"PCA reduced features to {X_train_scaled.shape[1]} dimensions")
+
+#     return X_train_scaled, X_valid_scaled, X_test_scaled
+
+# # ---------------------- Model Factory ----------------------
+# def get_model(name):
+#     if name == "xgboost":
+#         return xgb.XGBClassifier(
+#             learning_rate=0.03, max_depth=6, subsample=0.9,
+#             colsample_bytree=0.9, n_estimators=400,
+#             random_state=42, use_label_encoder=False, eval_metric='auc'
+#         )
+#     elif name == "lightgbm":
+#         return LGBMClassifier(
+#             learning_rate=0.03, max_depth=6, num_leaves=31,
+#             n_estimators=400, subsample=0.9,
+#             colsample_bytree=0.9, random_state=42
+#         )
+#     elif name == "logistic":
+#         return LogisticRegression(C=1.0, max_iter=1000, solver='liblinear', random_state=42)
+
+# # ---------------------- Training ----------------------
+# def train_model(model, X_train, y_train, X_valid, y_valid, name, use_smote=False):
+#     if use_smote:
+#         smote = SMOTE(random_state=42)
+#         X_train, y_train = smote.fit_resample(X_train, y_train)  # Apply SMOTE
+#         logging.info(f"SMOTE applied: {X_train.shape[0]} samples")
+
+#     if name in ["xgboost", "lightgbm"]:
+#         model.fit(X_train, y_train,
+#                   eval_set=[(X_valid, y_valid)])
+#     else:
+#         model.fit(X_train, y_train)
+#     return model
+
+# # ---------------------- Evaluation ----------------------
+# def evaluate(model, X, y, split, name, featurizer):
+#     y_prob = model.predict_proba(X)[:, 1]
+#     y_pred = (y_prob > 0.5).astype(int)
+
+#     metrics = {
+#         'accuracy': accuracy_score(y, y_pred),
+#         # 'precision': precision_score(y, y_pred),
+#         # 'recall': recall_score(y, y_pred),
+#         'f1': f1_score(y, y_pred),
+#         # 'roc_auc': roc_auc_score(y, y_prob),
+#         # 'avg_precision': average_precision_score(y, y_prob)
+#     }
+
+#     logging.info(f"[{split.upper()}] {name} Metrics: " + ", ".join(f"{k}: {v:.4f}" for k, v in metrics.items()))
+
+#     # Plot confusion matrix
+#     plt.figure(figsize=(6, 5))
+#     sns.heatmap(confusion_matrix(y, y_pred), annot=True, fmt="d", cmap="Blues")
+#     plt.title(f"{split.upper()} Confusion Matrix - {name}")
+#     plt.savefig(f"data/plots/plots_for_{featurizer}/confusion_matrix_{split}_{name}.png")
+#     plt.close()
+
+#     return metrics
+
+# # ---------------------- SHAP Analysis ----------------------
+# def shap_analysis(model, X_train, feature_cols, featurizer):
+#     explainer = shap.Explainer(model, X_train)
+#     shap_values = explainer(X_train)
+    
+#     # Create a figure that won't be displayed
+#     plt.figure(figsize=(10, 8))
+    
+#     # Generate the SHAP plot with show=False to prevent display
+#     shap.summary_plot(shap_values, X_train, feature_names=feature_cols, show=False)
+    
+#     # Save the figure
+#     plt.savefig(f"data/plots/plots_for_{featurizer}/shap_summary_plot.png", dpi=150, bbox_inches='tight')
+    
+#     # Close the figure to prevent display and free memory
+#     plt.close()
+
+# # ---------------------- Save Results to JSON ----------------------
+# def save_results(results, model_name, featurizer, pca_option, use_smote):
+#     # Create filename with configuration details
+#     config_str = f"{model_name}_{featurizer}"
+#     if pca_option is not None:
+#         config_str += f"_pca_"
+#     if use_smote:
+#         config_str += "_smote"
+    
+#     filename = f"data/results/results_for_{featurizer}/{config_str}_results.json"
+    
+#     # Save results dictionary to JSON file
+#     with open(filename, 'w') as f:
+#         json.dump(results, f, indent=4)
+    
+#     logging.info(f"Results saved to {filename}")
+
+# # ---------------------- Main Entry ----------------------
+# def main():
+#     args = parse_args()
+#     featurizer = args.feat
+#     create_dirs(args.model, featurizer)
+#     data = load_data(featurizer)
+
+#     X_train, X_valid, X_test = data['train']['X'], data['valid']['X'], data['test']['X']
+#     y_train, y_valid, y_test = data['train']['y'], data['valid']['y'], data['test']['y']
+
+#     X_train_prep, X_valid_prep, X_test_prep = preprocess(X_train, X_valid, X_test, args.pca)
+
+#     model = get_model(args.model)
+#     model = train_model(model, X_train_prep, y_train, X_valid_prep, y_valid, args.model, use_smote=args.smote)
+
+#     # Save model
+#     with open(f"models/models_for_{featurizer}/{args.model}/model.pkl", "wb") as f:
+#         pickle.dump(model, f)
+
+#     # Evaluate and collect results
+#     results = {
+#         "model_config": {
+#             "model_type": args.model,
+#             "featurizer": args.feat,
+#             "pca": args.pca,
+#             "smote": args.smote
+#         },
+#         "metrics": {}
+#     }
+    
+#     results["metrics"]["train"] = evaluate(model, X_train_prep, y_train, "train", args.model, featurizer)
+#     results["metrics"]["valid"] = evaluate(model, X_valid_prep, y_valid, "valid", args.model, featurizer)
+#     results["metrics"]["test"] = evaluate(model, X_test_prep, y_test, "test", args.model, featurizer)
+    
+#     # Save results to JSON
+#     save_results(results, args.model, featurizer, args.pca, args.smote)
+
+#     # SHAP Analysis
+#     if args.shap:
+#         feature_cols = X_train.columns[2:]
+#         shap_analysis(model, X_train_prep, feature_cols, featurizer)
+
+# if __name__ == "__main__":
+#     main()
+
 
 import os
-import json
 import logging
-import numpy as np
+import argparse
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pickle
-import argparse
-from sklearn.model_selection import train_test_split, cross_val_score
+import json
+
+import shap
+from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import (
     accuracy_score, precision_score, recall_score, f1_score,
-    roc_auc_score, confusion_matrix, classification_report,
-    precision_recall_curve, average_precision_score
+    roc_auc_score, average_precision_score, confusion_matrix
 )
-import xgboost as xgb
+
 from lightgbm import LGBMClassifier
 from sklearn.linear_model import LogisticRegression
+import xgboost as xgb
+from imblearn.over_sampling import SMOTE  # Import SMOTE
 
-
-# Configure logging to track the training process
+# ---------------------- Logging Setup ----------------------
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
+    format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.FileHandler('models/bbb_training.log'),
+        logging.FileHandler("models/bbb_training.log"),
         logging.StreamHandler()
     ]
 )
 
-def parse_arguments():
-    """Parse command line arguments for model selection."""
-    parser = argparse.ArgumentParser(description='Train a BBB permeability prediction model')
-    parser.add_argument('--model', type=str, default='xgboost', 
-                        choices=['xgboost', 'lightgbm', 'logistic'],
-                        help='Model type to use for training (xgboost, lightgbm, or logistic)')
+# ---------------------- Argument Parser ----------------------
+def parse_args():
+    parser = argparse.ArgumentParser(description="BBB Permeability Prediction")
+    parser.add_argument("--model", choices=["xgboost", "lightgbm", "logistic"], default="xgboost")
+    parser.add_argument("--feat", choices=["eos39co", "eos24ci"], default="eos39co")
+    parser.add_argument("--pca", type=float, default=None, help="PCA components (e.g. 100 or 0.95 for 95% variance)")
+    parser.add_argument("--shap", action="store_true", help="Enable SHAP analysis")
+    parser.add_argument("--smote", action="store_true", help="Enable SMOTE oversampling")
     return parser.parse_args()
 
-def create_directories(model_type):
-    """Ensure required directories exist for saving models and results."""
-    directories = [
-        f'models/{model_type}',
-        'data/results',
-        'data/plots'
-    ]
-    for directory in directories:
-        os.makedirs(directory, exist_ok=True)
+# ---------------------- Generate Configuration ID ----------------------
+def get_config_id(model_name, featurizer, pca_option, use_smote):
+    """Generate a unique configuration ID based on the CLI arguments"""
+    config_id = f"{model_name}_{featurizer}"
+    if pca_option is not None:
+        config_id += f"_pca{pca_option}_"
+    if use_smote:
+        config_id += "_smote"
+    return config_id
 
-
-def load_bbb_data():
-    """Load featurized data and target values from original data files."""
-    datasets = {}
-
-    for split in ['train', 'valid', 'test']:
-        # Load featurized data (without target)
-        feature_file = f'data/featurized_data/BBB_Martins_{split}_features.csv'
-        X = pd.read_csv(feature_file)
-        
-        # Load original data (with target)
-        original_file = f'data/download_data/BBB_Martins_{split}.csv'
-        original_df = pd.read_csv(original_file)
-        
-        # Extract target variable
-        y = original_df['Y'].astype(int)  # Assuming 'Y' is the target column
-        
-        # Verify that the number of samples match
-        if len(X) != len(y):
-            logging.error(f"Mismatch in number of samples for {split} set: {len(X)} features vs {len(y)} targets")
-            raise ValueError(f"Number of samples in featurized and original {split} data don't match")
-        
-        datasets[split] = {'features': X, 'labels': y}
-        logging.info(f"Loaded {split} dataset with {X.shape[0]} samples and {X.shape[1]} features.")
+# ---------------------- Directory Setup ----------------------
+def create_dirs(model_name, featurizer, pca_option, use_smote):
+    """Create directories based on configuration ID"""
+    config_id = get_config_id(model_name, featurizer, pca_option, use_smote)
     
-    return datasets
+    # Create main directories
+    os.makedirs(f"models/{config_id}", exist_ok=True)
+    os.makedirs(f"data/plots/{config_id}", exist_ok=True)
+    os.makedirs(f"data/results/{config_id}", exist_ok=True)
+    
+    logging.info(f"Created directories for configuration: {config_id}")
+    return config_id
 
+# ---------------------- Data Loader ----------------------
+def load_data(feat_type):
+    data = {}
+    for split in ['train', 'valid', 'test']:
+        X = pd.read_csv(f"data/featurized_data/featurized_data_with_{feat_type}/BBB_Martins_{split}_features.csv")
+        y = pd.read_csv(f"data/download_data/BBB_Martins_{split}.csv")['Y'].astype(int)
+        if len(X) != len(y):
+            raise ValueError(f"Mismatch in {split}: {len(X)} features vs {len(y)} targets")
+        data[split] = {'X': X, 'y': y}
+        logging.info(f"{split.title()} loaded: {X.shape[0]} samples, {X.shape[1]} features")
+    return data
 
-def preprocess_data(X_train, X_valid, X_test):
-    """Standardize feature data using mean and variance scaling."""
+# ---------------------- Preprocessing with Optional PCA ----------------------
+def preprocess(X_train, X_valid, X_test, pca_option=None):
+    feature_cols = X_train.columns[2:]  # assume first 2 columns are ID/SMILES
+
+    # Fill missing values with train means
+    for col in feature_cols:
+        mean = X_train[col].mean()
+        X_train[col].fillna(mean, inplace=True)
+        X_valid[col].fillna(mean, inplace=True)
+        X_test[col].fillna(mean, inplace=True)
+
     scaler = StandardScaler()
-    X_train_scaled = scaler.fit_transform(X_train.iloc[:,2:])
-    X_valid_scaled = scaler.transform(X_valid.iloc[:,2:])
-    X_test_scaled = scaler.transform(X_test.iloc[:,2:])
+    X_train_scaled = scaler.fit_transform(X_train[feature_cols])
+    X_valid_scaled = scaler.transform(X_valid[feature_cols])
+    X_test_scaled = scaler.transform(X_test[feature_cols])
+
+    if pca_option is not None:
+        pca = PCA(n_components=pca_option)
+        X_train_scaled = pca.fit_transform(X_train_scaled)
+        X_valid_scaled = pca.transform(X_valid_scaled)
+        X_test_scaled = pca.transform(X_test_scaled)
+        logging.info(f"PCA reduced features to {X_train_scaled.shape[1]} dimensions")
+
     return X_train_scaled, X_valid_scaled, X_test_scaled, scaler
 
+# ---------------------- Model Factory ----------------------
+def get_model(name):
+    if name == "xgboost":
+        return xgb.XGBClassifier(
+            learning_rate=0.03, max_depth=6, subsample=0.9,
+            colsample_bytree=0.9, n_estimators=400,
+            random_state=42, use_label_encoder=False, eval_metric='auc'
+        )
+    elif name == "lightgbm":
+        return LGBMClassifier(
+            learning_rate=0.03, max_depth=6, num_leaves=31,
+            n_estimators=400, subsample=0.9,
+            colsample_bytree=0.9, random_state=42
+        )
+    elif name == "logistic":
+        return LogisticRegression(C=1.0, max_iter=1000, solver='liblinear', random_state=42)
 
-def create_model(model_type):
-    """Create and return a model based on the specified type."""
-    if model_type == 'xgboost':
-        model = xgb.XGBClassifier(
-            objective='binary:logistic',
-            eval_metric='auc',
-            learning_rate=0.01,
-            max_depth=6,
-            min_child_weight=1,
-            subsample=0.8,
-            colsample_bytree=0.8,
-            n_estimators=500,
-            early_stopping_rounds=50,
-            random_state=42,
-            use_label_encoder=False
-        )
-    elif model_type == 'lightgbm':
-        model = LGBMClassifier(
-            objective='binary',
-            metric='auc',
-            learning_rate=0.01,
-            max_depth=6,
-            num_leaves=31,
-            n_estimators=500,
-            subsample=0.8,
-            colsample_bytree=0.8,
-            random_state=42
-        )
-    elif model_type == 'logistic':
-        model = LogisticRegression(
-            C=1.0,
-            max_iter=1000,
-            solver='liblinear',
-            random_state=42
-        )
+# ---------------------- Training ----------------------
+def train_model(model, X_train, y_train, X_valid, y_valid, name, use_smote=False):
+    if use_smote:
+        smote = SMOTE(random_state=42)
+        X_train, y_train = smote.fit_resample(X_train, y_train)  # Apply SMOTE
+        logging.info(f"SMOTE applied: {X_train.shape[0]} samples")
+
+    if name in ["xgboost", "lightgbm"]:
+        model.fit(X_train, y_train,
+                  eval_set=[(X_valid, y_valid)])
     else:
-        raise ValueError(f"Unsupported model type: {model_type}")
-    
-    return model
-
-
-def train_model(model, X_train, y_train, X_valid, y_valid, model_type):
-    """Train the selected model with appropriate parameters."""
-    if model_type in ['xgboost', 'lightgbm']:
-        model.fit(
-            X_train, y_train,
-            eval_set=[(X_train, y_train), (X_valid, y_valid)],
-            verbose=100 if model_type == 'xgboost' else True
-        )
-    else:  # Logistic regression
         model.fit(X_train, y_train)
-    
     return model
 
+# ---------------------- Evaluation ----------------------
+def evaluate(model, X, y, split, config_id):
+    y_prob = model.predict_proba(X)[:, 1]
+    y_pred = (y_prob > 0.5).astype(int)
 
-def evaluate_model(model, X, y, split_name, model_type):
-    """Evaluate the trained model on a dataset and generate performance metrics."""
-    y_pred_proba = model.predict_proba(X)[:, 1]
-    y_pred = (y_pred_proba > 0.5).astype(int)
-    
     metrics = {
         'accuracy': accuracy_score(y, y_pred),
-        'precision': precision_score(y, y_pred),
-        'recall': recall_score(y, y_pred),
-        'f1_score': f1_score(y, y_pred),
-        'roc_auc': roc_auc_score(y, y_pred_proba),
-        'avg_precision': average_precision_score(y, y_pred_proba)
+        # 'precision': precision_score(y, y_pred),
+        # 'recall': recall_score(y, y_pred),
+        'f1': f1_score(y, y_pred),
+        # 'roc_auc': roc_auc_score(y, y_prob),
+        # 'avg_precision': average_precision_score(y, y_prob)
     }
-    
-    # Save confusion matrix plot
-    plt.figure(figsize=(8, 6))
-    sns.heatmap(confusion_matrix(y, y_pred), annot=True, fmt='d', cmap='Blues')
-    plt.title(f'Confusion Matrix - {model_type} - {split_name}')
-    plt.xlabel('Predicted')
-    plt.ylabel('Actual')
-    plt.savefig(f'data/plots/confusion_matrix_{model_type}_{split_name}.png')
+
+    logging.info(f"[{split.upper()}] Metrics: " + ", ".join(f"{k}: {v:.4f}" for k, v in metrics.items()))
+
+    # Plot confusion matrix
+    plt.figure(figsize=(6, 5))
+    sns.heatmap(confusion_matrix(y, y_pred), annot=True, fmt="d", cmap="Blues")
+    plt.title(f"{split.upper()} Confusion Matrix - {config_id}")
+    plt.savefig(f"data/plots/{config_id}/confusion_matrix_{split}.png")
     plt.close()
-    
-    # Save ROC curve plot
-    from sklearn.metrics import roc_curve
-    fpr, tpr, _ = roc_curve(y, y_pred_proba)
-    plt.figure(figsize=(8, 6))
-    plt.plot(fpr, tpr, label=f'AUC = {roc_auc_score(y, y_pred_proba):.3f}')
-    plt.plot([0, 1], [0, 1], 'k--')
-    plt.xlabel('False Positive Rate')
-    plt.ylabel('True Positive Rate')
-    plt.title(f'ROC Curve - {model_type} - {split_name}')
-    plt.legend()
-    plt.savefig(f'data/plots/roc_curve_{model_type}_{split_name}.png')
-    plt.close()
-    
+
     return metrics
 
+# ---------------------- SHAP Analysis ----------------------
+def shap_analysis(model, X_train, feature_cols, config_id):
+    explainer = shap.Explainer(model, X_train)
+    shap_values = explainer(X_train)
+    
+    # Create a figure that won't be displayed
+    plt.figure(figsize=(10, 8))
+    
+    # Generate the SHAP plot with show=False to prevent display
+    shap.summary_plot(shap_values, X_train, feature_names=feature_cols, show=False)
+    
+    # Save the figure
+    plt.savefig(f"data/plots/{config_id}/shap_summary_plot.png", dpi=150, bbox_inches='tight')
+    
+    # Close the figure to prevent display and free memory
+    plt.close()
 
+# ---------------------- Save Results to JSON ----------------------
+def save_results(results, config_id):
+    """Save results to JSON file"""
+    filename = f"data/results/{config_id}/metrics.json"
+    
+    # Save results dictionary to JSON file
+    with open(filename, 'w') as f:
+        json.dump(results, f, indent=4)
+    
+    logging.info(f"Results saved to {filename}")
+
+# ---------------------- Save Config Details ----------------------
+def save_config_details(args, config_id):
+    """Save configuration details to a separate file"""
+    config_details = {
+        "model_type": args.model,
+        "featurizer": args.feat,
+        "pca": args.pca,
+        "smote": args.smote,
+        "config_id": config_id
+    }
+    
+    # Save configuration to JSON
+    with open(f"data/results/{config_id}/config.json", 'w') as f:
+        json.dump(config_details, f, indent=4)
+    
+    # Also save as a text file for quick reference
+    with open(f"data/results/{config_id}/config.txt", 'w') as f:
+        for key, value in config_details.items():
+            f.write(f"{key}: {value}\n")
+
+# ---------------------- Main Entry ----------------------
 def main():
-    """Complete pipeline to train, evaluate, and save the model."""
-    args = parse_arguments()
-    model_type = args.model
-    logging.info(f"Selected model type: {model_type}")
+    args = parse_args()
     
-    create_directories(model_type)
+    # Create unique configuration ID and directories
+    config_id = create_dirs(args.model, args.feat, args.pca, args.smote)
     
-    try:
-        data = load_bbb_data()
-        
-        # Preprocess features
-        X_train, X_valid, X_test, scaler = preprocess_data(
-            data['train']['features'], data['valid']['features'], data['test']['features']
-        )
-        y_train, y_valid, y_test = data['train']['labels'], data['valid']['labels'], data['test']['labels']
-        
-        # Create and train model
-        logging.info(f"Training {model_type} model...")
-        model = create_model(model_type)
-        model = train_model(model, X_train, y_train, X_valid, y_valid, model_type)
-        
-        # Save model using pickle
-        model_path = f'models/{model_type}/{model_type}_model.pkl'
-        with open(model_path, 'wb') as f:
-            pickle.dump(model, f)
-        logging.info(f"Model saved successfully to {model_path}")
-        
-        # Also save the scaler for future use
-        scaler_path = f'models/{model_type}/feature_scaler.pkl'
-        with open(scaler_path, 'wb') as f:
-            pickle.dump(scaler, f)
-        logging.info(f"Feature scaler saved to {scaler_path}")
-        
-        # Evaluate model and store results
-        results = {}
-        for split, X, y in [('train', X_train, y_train), ('valid', X_valid, y_valid), ('test', X_test, y_test)]:
-            logging.info(f"Evaluating {split} set...")
-            results[split] = evaluate_model(model, X, y, split, model_type)
-            logging.info(f"{split} set metrics: {results[split]}")
-        
-        # Save results to JSON
-        with open(f'data/results/model_evaluation_{model_type}.json', 'w') as f:
-            json.dump(results, f, indent=2)
-        
-        logging.info("Pipeline completed successfully!")
-        
-    except Exception as e:
-        logging.error(f"Error in pipeline: {str(e)}")
-        raise
+    # Save configuration details
+    save_config_details(args, config_id)
+    
+    # Load data
+    data = load_data(args.feat)
+
+    X_train, X_valid, X_test = data['train']['X'], data['valid']['X'], data['test']['X']
+    y_train, y_valid, y_test = data['train']['y'], data['valid']['y'], data['test']['y']
+
+    X_train_prep, X_valid_prep, X_test_prep, scaler = preprocess(X_train, X_valid, X_test, args.pca)
+
+    model = get_model(args.model)
+    model = train_model(model, X_train_prep, y_train, X_valid_prep, y_valid, args.model, use_smote=args.smote)
+
+    # Save model
+    with open(f"models/{config_id}/model.pkl", "wb") as f:
+        pickle.dump(model, f)
+    
+    # Save scaler if needed (useful for later inference)
+    with open(f"models/{config_id}/scaler.pkl", "wb") as f:
+        pickle.dump(scaler, f)
+
+    # Evaluate and collect results
+    results = {
+        "metrics": {}
+    }
+    
+    results["metrics"]["train"] = evaluate(model, X_train_prep, y_train, "train", config_id)
+    results["metrics"]["valid"] = evaluate(model, X_valid_prep, y_valid, "valid", config_id)
+    results["metrics"]["test"] = evaluate(model, X_test_prep, y_test, "test", config_id)
+    
+    # Save results to JSON
+    save_results(results, config_id)
+
+    # SHAP Analysis
+    if args.shap:
+        feature_cols = X_train.columns[2:]
+        shap_analysis(model, X_train_prep, feature_cols, config_id)
 
 if __name__ == "__main__":
     main()
