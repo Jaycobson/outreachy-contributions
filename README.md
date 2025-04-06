@@ -370,13 +370,10 @@ This document compares the performance of different modeling approaches for our 
   - It shows less overfitting than eos39co models and outperforms all other variants on test data
 
 ## Model Interpretability using the xgboost model with featurizer eos24ci(DrugTax)
-```
-![Shapely_image]()
-![DrugTax (eos24ci)](https://github.com/user-attachments/assets/e600c691-5450-4e3c-8f96-06961a87f0bf) ![Uni-Mol (eos39co)](https://github.com/user-attachments/assets/887f9d22-2838-4092-bbd9-7d536ec6941e)
-```
+
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/e600c691-5450-4e3c-8f96-06961a87f0bf" alt="DrugTax" width="500"/>
-  <img src="https://github.com/user-attachments/assets/887f9d22-2838-4092-bbd9-7d536ec6941e" alt="Uni-Mol" width="500"/>
+  <img src="https://github.com/user-attachments/assets/e600c691-5450-4e3c-8f96-06961a87f0bf" alt="DrugTax" width="300"/>
+  <img src="https://github.com/user-attachments/assets/887f9d22-2838-4092-bbd9-7d536ec6941e" alt="Uni-Mol" width="300"/>
 </p>
 
 <p align="center">
