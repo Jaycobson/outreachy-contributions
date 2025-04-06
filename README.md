@@ -331,6 +331,9 @@ This document compares the performance of different modeling approaches for our 
 | xgboost_eos39co | XGBoost | eos39co | No | No |
 | xgboost_eos39co_pca0.95_ | XGBoost | eos39co | 0.95 | No |
 | xgboost_eos39co_pca0.95__smote | XGBoost | eos39co | 0.95 | Yes |
+| xgboost_eos24ci | XGBoost | eos24ci | No | No |
+| xgboost_eos24ci_pca0.95_ | XGBoost | eos24ci | 0.95 | No |
+| xgboost_eos24ci_pca0.95__smote | XGBoost | eos24ci | 0.95 | Yes |
 
 ## Consolidated Performance Metrics
 
@@ -339,7 +342,32 @@ This document compares the performance of different modeling approaches for our 
 | xgboost_eos39co | 0.9986 | 0.9991 | 0.8916 | 0.9317 | 0.8300 | 0.8937 |
 | xgboost_eos39co_pca0.95_ | 0.9986 | 0.9991 | 0.8768 | 0.9235 | 0.8300 | 0.8956 |
 | xgboost_eos39co_pca0.95__smote | 0.9986 | 0.9991 | 0.8867 | 0.9279 | 0.8202 | 0.8836 |
+| xgboost_eos24ci | 0.9641 | 0.9771 | 0.9015 | 0.9371 | 0.8571 | 0.9097 |
+| xgboost_eos24ci_pca0.95_ | 0.9958 | 0.9973 | 0.8719 | 0.9182 | 0.8399 | 0.8989 |
+| xgboost_eos24ci_pca0.95__smote | 0.9951 | 0.9968 | 0.8374 | 0.8939 | 0.8325 | 0.8903 |
 
+## Analysis
+- Model performance varies significantly between featurizers:
+  - The eos24ci models achieve better test accuracy (0.8571 for base model) compared to eos39co models (0.8300 for base models)
+  - The eos24ci base model shows the highest overall test metrics (accuracy: 0.8571, F1: 0.9097)
+
+- Training performance patterns:
+  - eos39co models show extremely high training metrics (accuracy: 0.9986, F1: 0.9991) across all variants
+  - eos24ci models show slightly lower but still strong training performance, with PCA variants achieving higher training metrics (accuracy ~0.995, F1 ~0.997) than the base model
+
+- Impact of feature engineering:
+  - For both featurizers, the base models (no PCA, no SMOTE) perform best on validation and test data
+  - Adding PCA (0.95) consistently reduces validation and test performance slightly
+  - Adding SMOTE further reduces performance across validation and test sets for both featurizers
+
+- Overfitting analysis:
+  - All models exhibit a gap between training and test metrics, indicating overfitting
+  - eos39co models show more severe overfitting with a larger gap between training (0.9986) and test (~0.83) metrics
+  - The PCA variants generally increase the training-test performance gap, suggesting they contribute to overfitting
+
+- Best model recommendation:
+  - The eos24ci base model offers the best balance of performance (test accuracy: 0.8571, F1: 0.9097)
+  - It shows less overfitting than eos39co models and outperforms all other variants on test data
 ## Analysis
 
 - All models achieve nearly perfect performance on the training data (accuracy: 0.9986, F1: 0.9991)
@@ -348,6 +376,16 @@ This document compares the performance of different modeling approaches for our 
 - The SMOTE variant shows slightly lower test performance (accuracy: 0.8202, F1: 0.8836)
 - There appears to be some overfitting in all models as indicated by the gap between training and test metrics
 
+## Analysis
+- All models show strong performance on training data, with the PCA models achieving higher training metrics (accuracy ~0.995, F1 ~0.997) compared to the base model
+- The base model (no PCA, no SMOTE) performs best on validation data (accuracy: 0.9015, F1: 0.9371) and test data (accuracy: 0.8571, F1: 0.9097)
+- Adding PCA (0.95) reduces validation and test performance slightly
+- Adding SMOTE further reduces performance across validation and test sets
+- There appears to be some overfitting in all models as indicated by the gap between training and test metrics, with the PCA models showing a larger gap
+
+
+## Next Steps
+Additional modeling approaches will be added to this comparison to evaluate relative performance.
 ## Next Steps
 
 Additional modeling approaches will be added to this comparison to evaluate relative performance.
