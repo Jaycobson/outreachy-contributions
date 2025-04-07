@@ -1,5 +1,38 @@
 # 🔬 Blood-Brain Barrier (BBB) Permeability Prediction 
+# 🔬 Blood-Brain Barrier (BBB) Permeability Prediction
 
+# 🔬 Blood-Brain Barrier (BBB) Permeability Prediction
+
+## Table of Contents
+- [Project Overview](#-project-overview)
+- [Dataset](#-dataset-significance)
+- [Project Structure](#-project-structure)
+- [Setup Instructions](#-setup-instructions)
+  - [Prerequisites](#prerequisites)
+  - [Environment Setup](#step-by-step-setup)
+- [Usage](#-usage)
+  - [Data Acquisition](#-dataset-acquisition)
+  - [Data Exploration](#-data-exploration-and-visualization)
+  - [Molecular Featurization](#-molecular-featurization)
+    - [Default Featurizer: Uni-Mol](#default-featurizer-uni-mol-eos39co)
+    - [Alternative Featurizer: DrugTax](#alternative-featurizer-drugtax-eos24ci)
+    - [Setup and Feature Generation](#setup-and-feature-generation)
+  - [Model Development](#-model-development)
+    - [Available Models](#-available-models)
+    - [Feature Engineering Options](#-feature-engineering-options)
+    - [Training Options](#-training-options)
+    - [Model Artifacts](#-model-artifacts)
+    - [Evaluation Results](#-evaluation-results)
+    - [Visualization Outputs](#-visualization-outputs)
+- [Results](#-model-performance-comparison)
+  - [Models Overview](#models-overview)
+  - [Performance Metrics](#consolidated-performance-metrics)
+  - [XGBoost Analysis](#xgboost-analysis)
+  - [LightGBM Models](#lightgbm-models)
+  - [XGBoost vs LightGBM](#lightgbm-vs-xgboost)
+- [Model Explanation with SHAP](#model-interpretability-using-the-xgboost-model-with-featurizer-eos24cidrugTax)
+
+  
 ## 🎯 Project Overview
 In this project, a machine learning model is trained to predict whether drug compounds can cross the blood-brain barrier, a critical factor in developing effective treatments for neurological disorders. Using the BBB_Martins dataset from Therapeutics Data Commons (TDC), I've built a comprehensive pipeline for data acquisition, visualization, molecular feature extraction and model development.
 
