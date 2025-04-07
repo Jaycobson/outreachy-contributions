@@ -1,0 +1,7 @@
+{
+    "model_type": "lightgbm",
+    "featurizer": "eos24ci",
+    "pca": 0.95,
+    "smote": true,
+    "config_id": "lightgbm_eos24ci_pca0.95__smote"
+}

@@ -1,0 +1,5 @@
+model_type: lightgbm
+featurizer: eos39co
+pca: None
+smote: False
+config_id: lightgbm_eos39co

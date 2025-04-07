@@ -1,0 +1,7 @@
+{
+    "model_type": "xgboost",
+    "featurizer": "eos24ci",
+    "pca": 0.95,
+    "smote": false,
+    "config_id": "xgboost_eos24ci_pca0.95_"
+}

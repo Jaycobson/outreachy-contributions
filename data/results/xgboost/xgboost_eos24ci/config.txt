@@ -1,0 +1,5 @@
+model_type: xgboost
+featurizer: eos24ci
+pca: None
+smote: False
+config_id: xgboost_eos24ci

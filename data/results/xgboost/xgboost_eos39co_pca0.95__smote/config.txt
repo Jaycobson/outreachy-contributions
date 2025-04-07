@@ -1,0 +1,5 @@
+model_type: xgboost
+featurizer: eos39co
+pca: 0.95
+smote: True
+config_id: xgboost_eos39co_pca0.95__smote
