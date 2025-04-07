@@ -386,10 +386,10 @@ LightGBM was also evaluated with the same configuration variants to compare agai
 
 ### LightGBM vs XGBoost
 
--LightGBM shows similar patterns to XGBoost across featurizers and feature engineering
--Lightgbm_eos24ci matches xgboost_eos24ci in test accuracy (0.8571) with slightly better F1 (0.9099 vs 0.9097)
--LightGBM with eos39co achieves perfect training metrics (1.0000) with PCA, indicating stronger overfitting
--Both frameworks perform best with eos24ci featurizer and no feature engineering
+*LightGBM shows similar patterns to XGBoost across featurizers and feature engineering
+*Lightgbm_eos24ci matches xgboost_eos24ci in test accuracy (0.8571) with slightly better F1 (0.9099 vs 0.9097)
+*LightGBM with eos39co achieves perfect training metrics (1.0000) with PCA, indicating stronger overfitting
+*Both frameworks perform best with eos24ci featurizer and no feature engineering
 
 ## Model Interpretability using the xgboost model with featurizer eos24ci(DrugTax)
 
