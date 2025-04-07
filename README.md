@@ -80,7 +80,6 @@ bbb-prediction/
 │   ├── results/             # Model evaluation results
 │   └── plots/               # Performance visualizations
 ├── models/                  # Saved model files
-│   ├── xgboost/             # XGBoost models
 ├── notebooks/               # Stores notebooks
 │   ├── analysis.ipynb       # Main notebook for visualization and analysis
 ├── scripts/
