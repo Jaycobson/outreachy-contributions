@@ -360,28 +360,32 @@ This document compares the performance of different modeling approaches for our 
 | xgboost_eos24ci_pca0.95_ | 0.9958 | 0.9973 | 0.8719 | 0.9182 | 0.8399 | 0.8989 |
 | xgboost_eos24ci_pca0.95__smote | 0.9951 | 0.9968 | 0.8374 | 0.8939 | 0.8325 | 0.8903 |
 
-## Analysis
-- Model performance varies significantly between featurizers:
-  - The eos24ci models achieve better test accuracy (0.8571 for base model) compared to eos39co models (0.8300 for base models)
-  - The eos24ci base model shows the highest overall test metrics (accuracy: 0.8571, F1: 0.9097)
+### XGBoost Analysis
 
-- Training performance patterns:
-  - eos39co models show extremely high training metrics (accuracy: 0.9986, F1: 0.9991) across all variants
-  - eos24ci models show slightly lower but still strong training performance, with PCA variants achieving higher training metrics (accuracy ~0.995, F1 ~0.997) than the base model
+-eos24ci models perform better than eos39co models on test data
+-Base models (without PCA/SMOTE) show best performance
+-Best XGBoost model: xgboost_eos24ci (Test Accuracy: 0.8571, F1: 0.9097)
+-PCA and SMOTE generally reduce performance
+-eos39co models show more overfitting than eos24ci models
 
-- Impact of feature engineering:
-  - For both featurizers, the base models (no PCA, no SMOTE) perform best on validation and test data
-  - Adding PCA (0.95) consistently reduces validation and test performance slightly
-  - Adding SMOTE further reduces performance across validation and test sets for both featurizers
+### LightGBM Models
+LightGBM was also evaluated with the same configuration variants to compare against XGBoost.
 
-- Overfitting analysis:
-  - All models exhibit a gap between training and test metrics, indicating overfitting
-  - eos39co models show more severe overfitting with a larger gap between training (0.9986) and test (~0.83) metrics
-  - The PCA variants generally increase the training-test performance gap, suggesting they contribute to overfitting
+| Model ID | Train Accuracy | Train F1 | Valid Accuracy | Valid F1 | Test Accuracy | Test F1 |
+|----------|---------------|----------|----------------|----------|--------------|---------|
+| lightgbm_eos24ci | 0.9557 | 0.9718 | 0.9064 | 0.9404 | 0.8571 | 0.9099 |
+| lightgbm_eos24ci_pca0.95_ | 0.9958 | 0.9973 | 0.8621 | 0.9119 | 0.8350 | 0.8961 |
+| lightgbm_eos24ci_pca0.95__smote | 0.9937 | 0.9959 | 0.8276 | 0.8860 | 0.8153 | 0.8792 |
+| lightgbm_eos39co | 0.9986 | 0.9991 | 0.8768 | 0.9231 | 0.8300 | 0.8940 |
+| lightgbm_eos39co_pca0.95_ | 1.0000 | 1.0000 | 0.8670 | 0.9174 | 0.8350 | 0.8968 |
+| lightgbm_eos39co_pca0.95__smote | 1.0000 | 1.0000 | 0.8719 | 0.9188 | 0.8300 | 0.8903 |
 
-- Best model recommendation:
-  - The eos24ci base model offers the best balance of performance (test accuracy: 0.8571, F1: 0.9097)
-  - It shows less overfitting than eos39co models and outperforms all other variants on test data
+### LightGBM vs XGBoost
+
+-LightGBM shows similar patterns to XGBoost across featurizers and feature engineering
+-Lightgbm_eos24ci matches xgboost_eos24ci in test accuracy (0.8571) with slightly better F1 (0.9099 vs 0.9097)
+-LightGBM with eos39co achieves perfect training metrics (1.0000) with PCA, indicating stronger overfitting
+-Both frameworks perform best with eos24ci featurizer and no feature engineering
 
 ## Model Interpretability using the xgboost model with featurizer eos24ci(DrugTax)
 
