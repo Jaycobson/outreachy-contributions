@@ -1,6 +1,3 @@
-# 🔬 Blood-Brain Barrier (BBB) Permeability Prediction 
-# 🔬 Blood-Brain Barrier (BBB) Permeability Prediction
-
 # 🔬 Blood-Brain Barrier (BBB) Permeability Prediction
 
 ## Table of Contents
