@@ -363,9 +363,13 @@ This document compares the performance of different modeling approaches for our 
 ### XGBoost Analysis
 
 -eos24ci models perform better than eos39co models on test data
+
 -Base models (without PCA/SMOTE) show best performance
+
 -Best XGBoost model: xgboost_eos24ci (Test Accuracy: 0.8571, F1: 0.9097)
+
 -PCA and SMOTE generally reduce performance
+
 -eos39co models show more overfitting than eos24ci models
 
 ### LightGBM Models
