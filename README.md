@@ -128,6 +128,20 @@ The notebook includes:
 - Class distribution analysis
 - Chemical property visualization (molecular weight, LogP, etc.)
 
+Some of the plots from the notebook are shown below.
+
+![Image](https://github.com/user-attachments/assets/4d87fd72-49b5-4d23-b16b-7b2e721db479)
+
+![Image](https://github.com/user-attachments/assets/7fb962b5-63b8-4c04-bdf4-2c9e756d1eb0)
+
+![Image](https://github.com/user-attachments/assets/1770b78b-00b3-4914-a667-f4f5e2ef3b9c)
+
+There three images above shows the distribution of each data split, I observed that the data is imbalanced. 
+
+![Image](https://github.com/user-attachments/assets/4a182261-5c57-4b27-b5e4-52145e6abb2c)
+
+I also visualized a few compounds with the Rdkit package.
+
 ## 🧪 Molecular Featurization
 
 This project utilizes two different molecular featurization approaches from the [Ersilia Model Hub](https://www.ersilia.io/model-hub):
