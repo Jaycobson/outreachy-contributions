@@ -1,6 +1,1 @@
 scikit-learn
-xgboost
-streamlit
-rdkit
-pubchempy
-drugtax
