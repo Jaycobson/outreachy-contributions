@@ -2,11 +2,15 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import joblib
-from rdkit import Chem
-from rdkit.Chem import Descriptors
+import os
 import pubchempy as pcp
 import drugtax
-import os
+
+# Import specific RDKit modules while avoiding Draw
+from rdkit import Chem
+# Import individual descriptors directly to avoid the Draw dependency
+from rdkit.Chem.Descriptors import MolWt, MolLogP, NumHDonors, NumHAcceptors, NumRotatableBonds, FractionCSP3
+from rdkit.Chem.rdMolDescriptors import CalcMolFormula, CalcNumRings, CalcTPSA, CalcNumAromaticRings
 
 # --- Helper functions ---
 
@@ -37,10 +41,10 @@ def extract_features(smile):
 
 def calculate_lipinski(mol):
     """Calculate Lipinski's Rule of Five parameters"""
-    mw = Descriptors.MolWt(mol)
-    logp = Descriptors.MolLogP(mol)
-    h_donors = Descriptors.NumHDonors(mol)
-    h_acceptors = Descriptors.NumHAcceptors(mol)
+    mw = MolWt(mol)
+    logp = MolLogP(mol)
+    h_donors = NumHDonors(mol)
+    h_acceptors = NumHAcceptors(mol)
     
     violations = 0
     if mw > 500: violations += 1
@@ -60,14 +64,14 @@ def calculate_lipinski(mol):
 def get_additional_properties(mol):
     """Get additional molecular properties"""
     props = {}
-    props["Formula"] = Chem.rdMolDescriptors.CalcMolFormula(mol)
+    props["Formula"] = CalcMolFormula(mol)
     props["Num Atoms"] = mol.GetNumAtoms()
     props["Num Bonds"] = mol.GetNumBonds()
-    props["Num Rings"] = Chem.rdMolDescriptors.CalcNumRings(mol)
-    props["TPSA"] = Chem.rdMolDescriptors.CalcTPSA(mol)
-    props["Rotatable Bonds"] = Descriptors.NumRotatableBonds(mol)
-    props["Fraction Sp3"] = Descriptors.FractionCSP3(mol)
-    props["Aromatic Rings"] = Chem.rdMolDescriptors.CalcNumAromaticRings(mol)
+    props["Num Rings"] = CalcNumRings(mol)
+    props["TPSA"] = CalcTPSA(mol)
+    props["Rotatable Bonds"] = NumRotatableBonds(mol)
+    props["Fraction Sp3"] = FractionCSP3(mol)
+    props["Aromatic Rings"] = CalcNumAromaticRings(mol)
     return props
 
 # --- Set model path ---
