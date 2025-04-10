@@ -4,3 +4,4 @@ streamlit
 rdkit
 pubchempy
 drugtax
+matplotlib
