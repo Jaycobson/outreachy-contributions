@@ -3,9 +3,8 @@ import pandas as pd
 import numpy as np
 import joblib
 from rdkit import Chem
-from rdkit.Chem import AllChem
-import matplotlib.pyplot as plt
-from matplotlib import cm
+from rdkit.Chem import Draw
+from rdkit.Chem import Descriptors
 import pubchempy as pcp
 import drugtax
 import base64
@@ -40,33 +39,18 @@ def extract_features(smile):
     return pd.DataFrame([features])
 
 def mol_to_img(mol, size=(400, 300)):
-    """Convert molecule to base64 encoded image using Matplotlib"""
-    # Make sure we have coordinates
-    if mol.GetNumConformers() == 0:
-        AllChem.Compute2DCoords(mol)
-    
-    # Create a matplotlib figure
-    fig = plt.figure(figsize=(size[0]/100, size[1]/100))
-    ax = fig.add_subplot(111)
-    
-    # Draw the molecule using RDKit's molecule drawing function
-    drawer = AllChem.Draw.MolDraw2DCairo(size[0], size[1])
-    drawer.DrawMolecule(mol)
-    drawer.FinishDrawing()
-    png_data = drawer.GetDrawingText()
-    
-    # Convert to base64
-    encoded = base64.b64encode(png_data).decode('utf-8')
-    
-    plt.close(fig)
-    return encoded
+    """Convert molecule to base64 encoded image"""
+    img = Draw.MolToImage(mol, size=size)
+    buffered = BytesIO()
+    img.save(buffered, format="PNG")
+    return base64.b64encode(buffered.getvalue()).decode()
 
 def calculate_lipinski(mol):
     """Calculate Lipinski's Rule of Five parameters"""
-    mw = Chem.Descriptors.MolWt(mol)
-    logp = Chem.Descriptors.MolLogP(mol)
-    h_donors = Chem.Descriptors.NumHDonors(mol)
-    h_acceptors = Chem.Descriptors.NumHAcceptors(mol)
+    mw = Descriptors.MolWt(mol)
+    logp = Descriptors.MolLogP(mol)
+    h_donors = Descriptors.NumHDonors(mol)
+    h_acceptors = Descriptors.NumHAcceptors(mol)
     
     violations = 0
     if mw > 500: violations += 1
