@@ -67,7 +67,7 @@ def calculate_lipinski(mol):
     }
 
 # --- Set model path ---
-MODEL_PATH = os.environ.get("MODEL_PATH", "/home/jaycobson/outreachy-contributions/models/xgboost/xgboost_eos24ci/model.pkl")
+MODEL_PATH = os.environ.get("MODEL_PATH", "models/xgboost/xgboost_eos24ci/model.pkl")
 
 # --- Streamlit App UI ---
 
