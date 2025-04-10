@@ -183,16 +183,6 @@ if smiles_to_process:
                             st.write("Feature importance not available for this model type.")
                     except Exception as e:
                         st.write(f"Could not extract feature importance: {str(e)}")
-            
-            # # Show full feature vector in expandable section
-            # with st.expander("🧬 All Extracted Features"):
-            #     # Convert any numpy types to Python native types for display
-            #     display_df = features_df.copy()
-            #     for col in display_df.columns:
-            #         if isinstance(display_df[col].iloc[0], (np.float32, np.float64, np.int32, np.int64)):
-            #             display_df[col] = display_df[col].astype(float)
-                
-            #     st.dataframe(display_df.T.rename(columns={0: "Value"}))
     
     except Exception as e:
         st.error(f"An error occurred: {str(e)}")
