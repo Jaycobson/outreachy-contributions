@@ -4,7 +4,7 @@ import numpy as np
 import joblib
 import rdkit
 from rdkit import Chem
-from rdkit.Chem import Draw
+# from rdkit.Chem import Draw
 from rdkit.Chem import Descriptors
 import pubchempy as pcp
 import drugtax
@@ -39,12 +39,6 @@ def extract_features(smile):
     features = dict(zip(drug.features.keys(), drug.features.values()))
     return pd.DataFrame([features])
 
-def mol_to_img(mol, size=(400, 300)):
-    """Convert molecule to base64 encoded image"""
-    img = Draw.MolToImage(mol, size=size)
-    buffered = BytesIO()
-    img.save(buffered, format="PNG")
-    return base64.b64encode(buffered.getvalue()).decode()
 
 def calculate_lipinski(mol):
     """Calculate Lipinski's Rule of Five parameters"""
@@ -117,9 +111,9 @@ if smiles_to_process:
             col1, col2 = st.columns([1, 1])
             
             with col1:
-                st.subheader("📊 Compound Visualization")
-                img_str = mol_to_img(mol)
-                st.image(f"data:image/png;base64,{img_str}", caption="Molecular Structure")
+                # st.subheader("📊 Compound Visualization")
+                # img_str = mol_to_img(mol)
+                # st.image(f"data:image/png;base64,{img_str}", caption="Molecular Structure")
                 
                 # Display basic properties
                 st.subheader("⚗️ Molecular Properties")
