@@ -2,9 +2,10 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import joblib
-from rdkit import Chem
-from rdkit.Chem import Draw
-from rdkit.Chem import Descriptors
+import rdkit
+# from rdkit import Chem
+# from rdkit.Chem import Draw
+# from rdkit.Chem import Descriptors
 import pubchempy as pcp
 import drugtax
 import base64
@@ -26,11 +27,11 @@ def get_smiles_from_name(compound_name):
         return None
 
 def kekulize_smiles(smile):
-    mol = Chem.MolFromSmiles(smile)
+    mol = rdkit.Chem.MolFromSmiles(smile)
     if mol is None:
         raise ValueError("Invalid SMILES string.")
-    Chem.Kekulize(mol, clearAromaticFlags=True)
-    return Chem.MolToSmiles(mol, kekuleSmiles=True)
+    rdkit.Chem.Kekulize(mol, clearAromaticFlags=True)
+    return rdkit.Chem.MolToSmiles(mol, kekuleSmiles=True)
 
 def extract_features(smile):
     canonical_smile = kekulize_smiles(smile)
@@ -40,17 +41,17 @@ def extract_features(smile):
 
 def mol_to_img(mol, size=(400, 300)):
     """Convert molecule to base64 encoded image"""
-    img = Draw.MolToImage(mol, size=size)
+    img = rdkit.Chem.Draw.MolToImage(mol, size=size)
     buffered = BytesIO()
     img.save(buffered, format="PNG")
     return base64.b64encode(buffered.getvalue()).decode()
 
 def calculate_lipinski(mol):
     """Calculate Lipinski's Rule of Five parameters"""
-    mw = Descriptors.MolWt(mol)
-    logp = Descriptors.MolLogP(mol)
-    h_donors = Descriptors.NumHDonors(mol)
-    h_acceptors = Descriptors.NumHAcceptors(mol)
+    mw = rdkit.Chem.Descriptors.MolWt(mol)
+    logp = rdkit.Chem.Descriptors.MolLogP(mol)
+    h_donors = rdkit.Chem.Descriptors.NumHDonors(mol)
+    h_acceptors = rdkit.Chem.Descriptors.NumHAcceptors(mol)
     
     violations = 0
     if mw > 500: violations += 1
@@ -108,7 +109,7 @@ elif process_button2 and name_input:
 if smiles_to_process:
     try:
         # Create molecule object for visualization and calculations
-        mol = Chem.MolFromSmiles(smiles_to_process)
+        mol = rdkit.Chem.MolFromSmiles(smiles_to_process)
         if mol is None:
             st.error("Invalid SMILES string. Please check and try again.")
         else:
