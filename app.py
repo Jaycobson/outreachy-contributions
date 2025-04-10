@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import joblib
 from rdkit import Chem
-from rdkit.Chem import Draw
+# from rdkit.Chem import Draw
 from rdkit.Chem import Descriptors
 import pubchempy as pcp
 import drugtax
@@ -116,9 +116,9 @@ if smiles_to_process:
             col1, col2 = st.columns([1, 1])
             
             with col1:
-                st.subheader("📊 Compound Visualization")
-                img_str = mol_to_img(mol)
-                st.image(f"data:image/png;base64,{img_str}", caption="Molecular Structure")
+                # st.subheader("📊 Compound Visualization")
+                # img_str = mol_to_img(mol)
+                # st.image(f"data:image/png;base64,{img_str}", caption="Molecular Structure")
                 
                 # Display basic properties
                 st.subheader("⚗️ Molecular Properties")
