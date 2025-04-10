@@ -42,6 +42,9 @@ The blood-brain barrier is a selective, semi-permeable membrane that protects th
 
 This binary classification model accepts SMILES notations of compounds as input and predicts BBB permeability (1 for permeable, 0 for non-permeable) based on molecular properties and structural features.
 
+## Demo App
+Live app can be found here. [!link to demo](https://outreachy-contributions-t3uon6ufkmm5vzqo2t3wgz.streamlit.app/)
+
 ## 📊 Dataset Significance
 The BBB_Martins dataset is vital for neuropharmaceutical research:
 
