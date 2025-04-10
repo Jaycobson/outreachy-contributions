@@ -3,12 +3,9 @@ import pandas as pd
 import numpy as np
 import joblib
 from rdkit import Chem
-from rdkit.Chem import Draw
 from rdkit.Chem import Descriptors
 import pubchempy as pcp
 import drugtax
-import base64
-from io import BytesIO
 import os
 
 # --- Helper functions ---
@@ -38,13 +35,6 @@ def extract_features(smile):
     features = dict(zip(drug.features.keys(), drug.features.values()))
     return pd.DataFrame([features])
 
-def mol_to_img(mol, size=(400, 300)):
-    """Convert molecule to base64 encoded image"""
-    img = Draw.MolToImage(mol, size=size)
-    buffered = BytesIO()
-    img.save(buffered, format="PNG")
-    return base64.b64encode(buffered.getvalue()).decode()
-
 def calculate_lipinski(mol):
     """Calculate Lipinski's Rule of Five parameters"""
     mw = Descriptors.MolWt(mol)
@@ -66,8 +56,22 @@ def calculate_lipinski(mol):
         "Rule Violations": violations
     }
 
+# Additional properties to replace visualization
+def get_additional_properties(mol):
+    """Get additional molecular properties"""
+    props = {}
+    props["Formula"] = Chem.rdMolDescriptors.CalcMolFormula(mol)
+    props["Num Atoms"] = mol.GetNumAtoms()
+    props["Num Bonds"] = mol.GetNumBonds()
+    props["Num Rings"] = Chem.rdMolDescriptors.CalcNumRings(mol)
+    props["TPSA"] = Chem.rdMolDescriptors.CalcTPSA(mol)
+    props["Rotatable Bonds"] = Descriptors.NumRotatableBonds(mol)
+    props["Fraction Sp3"] = Descriptors.FractionCSP3(mol)
+    props["Aromatic Rings"] = Chem.rdMolDescriptors.CalcNumAromaticRings(mol)
+    return props
+
 # --- Set model path ---
-MODEL_PATH = os.environ.get("MODEL_PATH", "models/xgboost/xgboost_eos24ci/model.pkl")
+MODEL_PATH = os.environ.get("MODEL_PATH", "/home/jaycobson/outreachy-contributions/models/xgboost/xgboost_eos24ci/model.pkl")
 
 # --- Streamlit App UI ---
 
@@ -80,13 +84,13 @@ st.markdown("Predict if a compound can cross the blood-brain barrier by entering
 tab1, tab2 = st.tabs(["SMILES Input", "Compound Name Input"])
 
 with tab1:
-    smiles_input = st.text_input("Enter SMILES string:", key="smiles_tab", value = 'CC(=O)OC1=CC=CC=C1C(=O)O')
+    smiles_input = st.text_input("Enter SMILES string:", key="smiles_tab", value='CC(=O)OC1=CC=CC=C1C(=O)O')
     st.markdown("Note: The SMILES string will be converted to a canonical form.")
     st.markdown("This may take a few seconds.")
     process_button1 = st.button("Analyze Compound", key="analyze1")
 
 with tab2:
-    name_input = st.text_input("Enter compound name:", key="name_tab", value = 'paracetamol')
+    name_input = st.text_input("Enter compound name:", key="name_tab", value='paracetamol')
     st.markdown("Note: The compound name will be converted to SMILES using PubChem.")
     st.markdown("This may take a few seconds.")
     process_button2 = st.button("Analyze Compound", key="analyze2")
@@ -107,24 +111,34 @@ elif process_button2 and name_input:
 # Process the SMILES if available
 if smiles_to_process:
     try:
-        # Create molecule object for visualization and calculations
+        # Create molecule object for calculations
         mol = Chem.MolFromSmiles(smiles_to_process)
         if mol is None:
             st.error("Invalid SMILES string. Please check and try again.")
         else:
-            # Create columns for visualization and prediction
+            # Create columns for properties and prediction
             col1, col2 = st.columns([1, 1])
             
             with col1:
-                st.subheader("📊 Compound Visualization")
-                img_str = mol_to_img(mol)
-                st.image(f"data:image/png;base64,{img_str}", caption="Molecular Structure")
+                st.subheader("🔬 Compound Information")
+                
+                # Display SMILES
+                st.text_area("SMILES Representation", smiles_to_process, height=80)
                 
                 # Display basic properties
                 st.subheader("⚗️ Molecular Properties")
                 lipinski = calculate_lipinski(mol)
-                properties_df = pd.DataFrame(list(lipinski.items()), columns=["Property", "Value"])
+                
+                # Get additional properties to replace visualization
+                additional_props = get_additional_properties(mol)
+                
+                # Combine properties
+                all_props = {**lipinski, **additional_props}
+                properties_df = pd.DataFrame(list(all_props.items()), columns=["Property", "Value"])
                 st.dataframe(properties_df, hide_index=True)
+                
+                # Add a note about visualization
+                st.info("Tip: To visualize this molecule, you can copy the SMILES and paste it into online tools like PubChem or MolView.")
             
             with col2:
                 # Extract features
