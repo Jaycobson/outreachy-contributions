@@ -45,7 +45,6 @@ This binary classification model accepts SMILES notations of compounds as input 
 
 ## Demo App
 Live app can be found here. [link to demo](https://outreachy-contributions-t3uon6ufkmm5vzqo2t3wgz.streamlit.app/)
-[demo](https://github.com/Jaycobson/outreachy-contributions/blob/new_branch/10.04.2025_16.02.16_REC.mp4)
 
 ## 📊 Dataset Significance
 The BBB_Martins dataset is vital for neuropharmaceutical research:
