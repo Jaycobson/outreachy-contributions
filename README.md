@@ -1,6 +1,7 @@
 # 🔬 Blood-Brain Barrier (BBB) Permeability Prediction
 
-https://github.com/user-attachments/assets/f4f881a0-1e33-4aef-91bb-0119d052f717
+https://github.com/user-attachments/assets/556b3efc-1980-406b-b866-78fe124ab5b6
+
 
 ## Table of Contents
 
